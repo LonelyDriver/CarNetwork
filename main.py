@@ -1,21 +1,29 @@
 import pygame as pg
 import numpy as np
 import math as m
+import time
 
 T = 60
 BACKGROUND_COLOR = (0,240,0)
+CAR_COLOR = (200, 50, 20)
 
 
-class Car(pg.Rect):
+class Car(pg.sprite.Sprite):
     def __init__(self,x,y,width,height):
-        super().__init__(x,y,width,height)
-        self.color = (200,10,20)
+        super().__init__()
         self.rotate = 0
         self.isMoving = False
-        self.acceleration = 1
+        self.acceleration = 0.01
         self.vel = [0, 0]
+        self.angle = 270
+
+        self.image = pg.Surface([width, height])
+        self.image.fill(CAR_COLOR)
+
+        self.rect = self.image.get_rect()
         self.pos = [float(x), float(y)]
-        self.angle = 0
+        self.rect.centerx = x
+        self.rect.centery = y
 
     def processEvents(self):
         keys = pg.key.get_pressed()
@@ -23,27 +31,30 @@ class Car(pg.Rect):
         self.isMoving += keys[pg.K_w]
 
         self.rotate = 0
-        if self.isMoving:
-            self.rotate += keys[pg.K_a]
-            self.rotate -= keys[pg.K_d]
+        #if self.isMoving:
+        self.rotate -= keys[pg.K_a]
+        self.rotate += keys[pg.K_d]
 
     def update(self,deltaTime):
         if self.rotate != 0:
-            self.angle = m.radians(self.rotate * deltaTime)
-        #    self.rotate()
-        #self.vel[0] = m.cos(angle) * deltaTime * 1
-        #self.vel[1] = m.sin(angle) * deltaTime * 1
+            self.angle = (self.angle + self.rotate * deltaTime * 10) % 360
+            self.image = pg.transform.rotate(self.image,self.angle)
+        if self.isMoving:
+            self.vel[0] += m.cos(m.radians(self.angle)) * self.acceleration * deltaTime
+            self.vel[1] += m.sin(m.radians(self.angle)) * self.acceleration * deltaTime
 
-        self.pos[0] += self.vel[0] * deltaTime * 0.1
-        self.pos[1] += self.vel[1] * deltaTime * 0.1
+        self.vel[0] = min(max(self.vel[0] * deltaTime * 10,-1),1)
+        self.vel[1] = min(max(self.vel[1] * deltaTime * 10,-1),1)
+        print("vx - {} : vy - {} : angle - {}".format(self.vel[0], self.vel[1], self.angle))
 
-        print("y - {} : x - {}".format(self.pos[1], self.pos[0]))
+        self.pos[0] += self.vel[0]
+        self.pos[1] += self.vel[1]
 
-        self.x = self.pos[0]
-        self.y = self.pos[1]
+        self.rect.centerx = self.pos[0]
+        self.rect.centery = self.pos[1]
 
     def render(self, screen):
-        pg.draw.rect(screen, self.color, self)
+        screen.blit(self.image,self.rect)
 
 class World():
     def __init__(self):
@@ -69,8 +80,7 @@ class World():
 
     def render(self,screen):
         for key, entity in self.entities.items():
-            if key == "car":
-                pg.draw.rect(screen, entity.color,(entity.left,entity.top,entity.width,entity.height))
+            entity.render(screen)
 
 
 
@@ -108,13 +118,15 @@ class Game():
 
     def run(self):
         self.running = True
-        clock = pg.time.Clock()
         timePerFrame = 1/T
-        timeSinceLastUpdate = 0
+        lastTime = time.time()
 
         while(self.running):
             self.processEvents()
-            timeSinceLastUpdate += clock.tick_busy_loop()
+            curTime = time.time()
+            timeSinceLastUpdate = curTime - lastTime
+            lastTime = curTime
+
             while(timeSinceLastUpdate > timePerFrame):
                 timeSinceLastUpdate -= timePerFrame
                 self.update(timePerFrame)
