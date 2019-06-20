@@ -6,24 +6,24 @@ import time
 T = 60
 BACKGROUND_COLOR = (0,240,0)
 CAR_COLOR = (200, 50, 20)
-
+WIDTH = 1000
+HEIGHT = 800
 
 class Car(pg.sprite.Sprite):
-    def __init__(self,x,y,width,height):
+    def __init__(self):
         super().__init__()
         self.rotate = 0
         self.isMoving = False
-        self.acceleration = 0.01
+        self.acc = .1
         self.vel = [0, 0]
         self.angle = 270
 
-        self.image = pg.Surface([width, height])
+        self.image = pg.Surface([40, 80])
         self.image.fill(CAR_COLOR)
 
         self.rect = self.image.get_rect()
-        self.pos = [float(x), float(y)]
-        self.rect.centerx = x
-        self.rect.centery = y
+        self.rect.center = (WIDTH/2, HEIGHT/2)
+        self.pos = [WIDTH/2, HEIGHT/2]
 
     def processEvents(self):
         keys = pg.key.get_pressed()
@@ -31,27 +31,28 @@ class Car(pg.sprite.Sprite):
         self.isMoving += keys[pg.K_w]
 
         self.rotate = 0
-        #if self.isMoving:
         self.rotate -= keys[pg.K_a]
         self.rotate += keys[pg.K_d]
 
     def update(self,deltaTime):
         if self.rotate != 0:
-            self.angle = (self.angle + self.rotate * deltaTime * 10) % 360
-            self.image = pg.transform.rotate(self.image,self.angle)
-        if self.isMoving:
-            self.vel[0] += m.cos(m.radians(self.angle)) * self.acceleration * deltaTime
-            self.vel[1] += m.sin(m.radians(self.angle)) * self.acceleration * deltaTime
+            self.angle = (self.angle + self.rotate * deltaTime * 20) % 360
+            vel_mag = m.sqrt(self.vel[0]*self.vel[0] + self.vel[1] * self.vel[1])
 
-        self.vel[0] = min(max(self.vel[0] * deltaTime * 10,-1),1)
-        self.vel[1] = min(max(self.vel[1] * deltaTime * 10,-1),1)
+            self.vel[0] = m.cos(m.radians(self.angle)) * vel_mag
+            self.vel[1] = m.sin(m.radians(self.angle)) * vel_mag
+        if self.isMoving:
+            self.vel[0] += m.cos(m.radians(self.angle)) * self.acc * deltaTime
+            self.vel[1] += m.sin(m.radians(self.angle)) * self.acc * deltaTime
+
+        #self.vel[0] = min(max(self.vel[0] * deltaTime * 10,-1),1)
+        #self.vel[1] = min(max(self.vel[1] * deltaTime * 10,-1),1)
         print("vx - {} : vy - {} : angle - {}".format(self.vel[0], self.vel[1], self.angle))
 
         self.pos[0] += self.vel[0]
         self.pos[1] += self.vel[1]
 
-        self.rect.centerx = self.pos[0]
-        self.rect.centery = self.pos[1]
+        self.rect.center = (self.pos[0], self.pos[1])
 
     def render(self, screen):
         screen.blit(self.image,self.rect)
@@ -89,12 +90,12 @@ class World():
 class Game():
     def __init__(self):
         pg.init()
-        self.screen = pg.display.set_mode((800,600))
+        self.screen = pg.display.set_mode((WIDTH,HEIGHT))
         pg.display.set_caption("Car Network")
 
         self.running = False
         self.world = World()
-        car = Car(300,400,40,80)
+        car = Car()
         self.world.addEntity('car',car)
 
     def processEvents(self):
