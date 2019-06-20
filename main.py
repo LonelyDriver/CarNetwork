@@ -1,5 +1,6 @@
 import pygame as pg
 import numpy as np
+import math as m
 
 T = 60
 BACKGROUND_COLOR = (0,240,0)
@@ -9,15 +10,40 @@ class Car(pg.Rect):
     def __init__(self,x,y,width,height):
         super().__init__(x,y,width,height)
         self.color = (200,10,20)
+        self.rotate = 0
+        self.isMoving = False
+        self.acceleration = 1
+        self.vel = [0, 0]
+        self.pos = [float(x), float(y)]
+        self.angle = 0
 
     def processEvents(self):
-        pass
+        keys = pg.key.get_pressed()
+        self.isMoving = False
+        self.isMoving += keys[pg.K_w]
+
+        self.rotate = 0
+        if self.isMoving:
+            self.rotate += keys[pg.K_a]
+            self.rotate -= keys[pg.K_d]
 
     def update(self,deltaTime):
-        pass
+        if self.rotate != 0:
+            self.angle = m.radians(self.rotate * deltaTime)
+        #    self.rotate()
+        #self.vel[0] = m.cos(angle) * deltaTime * 1
+        #self.vel[1] = m.sin(angle) * deltaTime * 1
+
+        self.pos[0] += self.vel[0] * deltaTime * 0.1
+        self.pos[1] += self.vel[1] * deltaTime * 0.1
+
+        print("y - {} : x - {}".format(self.pos[1], self.pos[0]))
+
+        self.x = self.pos[0]
+        self.y = self.pos[1]
 
     def render(self, screen):
-        pg.draw.rect(screen,self.color,self)
+        pg.draw.rect(screen, self.color, self)
 
 class World():
     def __init__(self):
@@ -84,11 +110,11 @@ class Game():
         self.running = True
         clock = pg.time.Clock()
         timePerFrame = 1/T
-        timeSinceLastUpdate = clock.tick_busy_loop()
+        timeSinceLastUpdate = 0
 
         while(self.running):
             self.processEvents()
-            timeSinceLastUpdate -= clock.tick_busy_loop()
+            timeSinceLastUpdate += clock.tick_busy_loop()
             while(timeSinceLastUpdate > timePerFrame):
                 timeSinceLastUpdate -= timePerFrame
                 self.update(timePerFrame)
