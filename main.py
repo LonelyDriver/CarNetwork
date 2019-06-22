@@ -1,7 +1,7 @@
 import pygame as pg
 import numpy as np
 import math as m
-import time
+import os
 
 T = 60
 BACKGROUND_COLOR = (0,240,0)
@@ -14,13 +14,17 @@ class Car(pg.sprite.Sprite):
         super().__init__()
         self.rotate = 0
         self.isMoving = False
-        self.acc = .1
+        self.acc = 0.5
         self.vel = [0, 0]
         self.angle = 270
+        self.rot_speed = 3
+        self.friction = .95
 
-        self.image = pg.Surface([40, 80])
-        self.image.fill(CAR_COLOR)
-
+        self.image = pg.image.load("assets/PNG/cars/car5_red.png")
+        self.image = pg.transform.rotate(self.image, 270)
+        self.rot_image = self.image.copy()
+        # self.rot_image = pg.transform.rotate(self.image, 270)
+        # self.rect = self.rot_image.get_rect()
         self.rect = self.image.get_rect()
         self.rect.center = (WIDTH/2, HEIGHT/2)
         self.pos = [WIDTH/2, HEIGHT/2]
@@ -34,28 +38,34 @@ class Car(pg.sprite.Sprite):
         self.rotate -= keys[pg.K_a]
         self.rotate += keys[pg.K_d]
 
-    def update(self,deltaTime):
-        if self.rotate != 0:
-            self.angle = (self.angle + self.rotate * deltaTime * 20) % 360
-            vel_mag = m.sqrt(self.vel[0]*self.vel[0] + self.vel[1] * self.vel[1])
+    def update(self):
+        self.angle = (self.angle + self.rotate * self.rot_speed) % 360
+        vel_mag = m.sqrt(self.vel[0]*self.vel[0] + self.vel[1] * self.vel[1])
 
-            self.vel[0] = m.cos(m.radians(self.angle)) * vel_mag
-            self.vel[1] = m.sin(m.radians(self.angle)) * vel_mag
+        self.vel[0] = m.cos(m.radians(self.angle)) * vel_mag
+        self.vel[1] = m.sin(m.radians(self.angle)) * vel_mag
+
+        self.rot_image = pg.transform.rotate(self.image, -self.angle)
+        self.rect = self.rot_image.get_rect()
+        self.rect.center = self.pos
+
         if self.isMoving:
-            self.vel[0] += m.cos(m.radians(self.angle)) * self.acc * deltaTime
-            self.vel[1] += m.sin(m.radians(self.angle)) * self.acc * deltaTime
+            self.vel[0] += m.cos(m.radians(self.angle)) * self.acc
+            self.vel[1] += m.sin(m.radians(self.angle)) * self.acc
 
-        #self.vel[0] = min(max(self.vel[0] * deltaTime * 10,-1),1)
-        #self.vel[1] = min(max(self.vel[1] * deltaTime * 10,-1),1)
         print("vx - {} : vy - {} : angle - {}".format(self.vel[0], self.vel[1], self.angle))
 
         self.pos[0] += self.vel[0]
         self.pos[1] += self.vel[1]
 
-        self.rect.center = (self.pos[0], self.pos[1])
+        self.vel[0] *= self.friction
+        self.vel[1] *= self.friction
+
+        self.rect.centerx = self.pos[0]
+        self.rect.centery = self.pos[1]
 
     def render(self, screen):
-        screen.blit(self.image,self.rect)
+        screen.blit(self.rot_image,self.rect)
 
 class World():
     def __init__(self):
@@ -74,10 +84,10 @@ class World():
             print("World is empty!")
 
 
-    def update(self, deltaTime):
+    def update(self):
         if(len(self.entities)):
             for entity in self.entities.values():
-                entity.update(deltaTime)
+                entity.update()
 
     def render(self,screen):
         for key, entity in self.entities.items():
@@ -109,8 +119,8 @@ class Game():
 
         self.world.processEvents()
 
-    def update(self, deltaTime):
-        self.world.update(deltaTime)
+    def update(self):
+        self.world.update()
 
     def render(self):
         self.screen.fill(BACKGROUND_COLOR)
@@ -119,20 +129,12 @@ class Game():
 
     def run(self):
         self.running = True
-        timePerFrame = 1/T
-        lastTime = time.time()
+        clock = pg.time.Clock()
 
         while(self.running):
+            clock.tick(60)
             self.processEvents()
-            curTime = time.time()
-            timeSinceLastUpdate = curTime - lastTime
-            lastTime = curTime
-
-            while(timeSinceLastUpdate > timePerFrame):
-                timeSinceLastUpdate -= timePerFrame
-                self.update(timePerFrame)
-
-            self.update(timePerFrame)
+            self.update()
             self.render()
 
 
