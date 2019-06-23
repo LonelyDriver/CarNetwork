@@ -1,7 +1,8 @@
 import pygame as pg
 import numpy as np
 import math as m
-import os
+import ResourceManager
+
 
 T = 60
 BACKGROUND_COLOR = (0,240,0)
@@ -10,7 +11,7 @@ WIDTH = 1000
 HEIGHT = 800
 
 class Car(pg.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, manager):
         super().__init__()
         self.rotate = 0
         self.isMoving = False
@@ -20,7 +21,8 @@ class Car(pg.sprite.Sprite):
         self.rot_speed = 3
         self.friction = .95
 
-        self.image = pg.image.load("assets/PNG/cars/car5_red.png")
+        self.image = manager.loadSprite('car')
+        # self.image = pg.image.load("assets/PNG/cars/car5_red.png")
         self.image = pg.transform.rotate(self.image, 270)
         self.rot_image = self.image.copy()
         # self.rot_image = pg.transform.rotate(self.image, 270)
@@ -35,8 +37,9 @@ class Car(pg.sprite.Sprite):
         self.isMoving += keys[pg.K_w]
 
         self.rotate = 0
-        self.rotate -= keys[pg.K_a]
-        self.rotate += keys[pg.K_d]
+        if self.isMoving:
+            self.rotate -= keys[pg.K_a]
+            self.rotate += keys[pg.K_d]
 
     def update(self):
         self.angle = (self.angle + self.rotate * self.rot_speed) % 360
@@ -53,8 +56,6 @@ class Car(pg.sprite.Sprite):
             self.vel[0] += m.cos(m.radians(self.angle)) * self.acc
             self.vel[1] += m.sin(m.radians(self.angle)) * self.acc
 
-        print("vx - {} : vy - {} : angle - {}".format(self.vel[0], self.vel[1], self.angle))
-
         self.pos[0] += self.vel[0]
         self.pos[1] += self.vel[1]
 
@@ -70,6 +71,8 @@ class Car(pg.sprite.Sprite):
 class World():
     def __init__(self):
         self.entities = {}
+        self.manager = ResourceManager.Manager()
+        self.addEntity('car',Car(self.manager))
 
     def addEntity(self, name, entity):
         self.entities.update([(name,entity)])
@@ -105,8 +108,6 @@ class Game():
 
         self.running = False
         self.world = World()
-        car = Car()
-        self.world.addEntity('car',car)
 
     def processEvents(self):
         for event in pg.event.get():
