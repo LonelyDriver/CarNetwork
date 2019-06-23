@@ -8,7 +8,7 @@ Neural Network that learns to play a raceing game.
 ### TODO:
 - [ ] Implement Car game
   - [x] Implement Basic Loop
-  - [ ] Control Car
+  - [x] Car control
   - [ ] Create Map
   - [ ] Get state vector
   - [ ] Visualize state vector
