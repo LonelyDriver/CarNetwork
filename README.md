@@ -7,7 +7,7 @@ Neural Network that learns to play a raceing game.
 
 ### TODO:
 - [ ] Implement Car game
-  - [x] Implement Basic Loop
+  - [x] Implement Basic Game Loop
   - [x] Car control
   - [x] Implement car physics
   - [ ] Create Map
