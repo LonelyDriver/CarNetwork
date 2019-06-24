@@ -35,7 +35,7 @@ class Tileset:
     def initialize(self):
         street = pg.Surface(TILESIZE)
         # ====>>> pg.rect.Rect(pos.x, pos.y, width, height)
-        street.blit(self.manager.getSprite('sheet'),(0,0), pg.rect.Rect(64 * 8, 0, TILESIZE[0],TILESIZE[1]))
+        street.blit(self.manager.getSprite('sheet'),(0,0), pg.rect.Rect(TILESIZE[0] * 8, 1 * TILESIZE[0], TILESIZE[0],TILESIZE[1]))
 
         self.tile_type['street'] = StreetTile(street)
 
