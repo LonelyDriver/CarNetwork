@@ -1,8 +1,8 @@
 import pygame as pg
 import numpy as np
 import math as m
+import TileMap
 import ResourceManager
-
 
 T = 60
 BACKGROUND_COLOR = (0,240,0)
@@ -21,7 +21,7 @@ class Car(pg.sprite.Sprite):
         self.rot_speed = 3
         self.friction = .95
 
-        self.image = manager.loadSprite('car')
+        self.image = manager.getSprite('car')
         # self.image = pg.image.load("assets/PNG/cars/car5_red.png")
         self.image = pg.transform.rotate(self.image, 270)
         self.rot_image = self.image.copy()
@@ -72,7 +72,9 @@ class World():
     def __init__(self):
         self.entities = {}
         self.manager = ResourceManager.Manager()
+        self.map = TileMap.Tileset(self.manager)
         self.addEntity('car',Car(self.manager))
+        self.addEntity('street', self.map.tile_type['street'])
 
     def addEntity(self, name, entity):
         self.entities.update([(name,entity)])
@@ -81,8 +83,6 @@ class World():
         if(len(self.entities)):
             for entity in self.entities.values():
                 entity.processEvents()
-            #for entity in self.entities:
-             #   entity.processEvents()
         else:
             print("World is empty!")
 
