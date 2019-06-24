@@ -9,7 +9,11 @@ Neural Network that learns to play a raceing game.
 - [ ] Implement Car game
   - [x] Implement Basic Loop
   - [x] Car control
+  - [x] Implement car physics
   - [ ] Create Map
+    - [x] Implement Resourcemanager
+    - [ ] Create Tiles with different Properties
+    - [ ] Create Tilemap
   - [ ] Get state vector
   - [ ] Visualize state vector
   
