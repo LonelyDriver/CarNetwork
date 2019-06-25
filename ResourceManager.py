@@ -30,3 +30,6 @@ class Manager:
         #         colorkey = image.get_at((0,0))
         #     image.set_colorkey(colorkey, pg.RLEACCEL)
         return image
+
+    def _loadSound(self, filename):
+        pass

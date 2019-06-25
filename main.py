@@ -3,16 +3,14 @@ import numpy as np
 import math as m
 import TileMap
 import ResourceManager
+from settings import *
 
-T = 60
-BACKGROUND_COLOR = (0,240,0)
-CAR_COLOR = (200, 50, 20)
-WIDTH = 1000
-HEIGHT = 800
+
 
 class Car(pg.sprite.Sprite):
-    def __init__(self, manager):
+    def __init__(self, manager, sprite_group):
         super().__init__()
+        sprite_group.add(self)
         self.rotate = 0
         self.isMoving = False
         self.acc = 0.5
@@ -70,30 +68,35 @@ class Car(pg.sprite.Sprite):
 
 class World():
     def __init__(self):
-        self.entities = {}
+        self.entities = pg.sprite.Group()
         self.manager = ResourceManager.Manager()
         self.map = TileMap.Tileset(self.manager)
-        self.addEntity('car',Car(self.manager))
-        self.addEntity('street', self.map.tile_type['street'])
 
-    def addEntity(self, name, entity):
-        self.entities.update([(name,entity)])
+        for x in range(3):
+            for y in range(3):
+                if y % 2:
+                    TileMap.StreetTile(self.map.getTile('street'),self.entities, x, y)
+                else:
+                    TileMap.GrasTile(self.map.getTile('gras'), self.entities, x, y)
+
+        Car(self.manager, self.entities)
+        stop=1
 
     def processEvents(self):
         if(len(self.entities)):
-            for entity in self.entities.values():
+            for entity in self.entities:
                 entity.processEvents()
         else:
             print("World is empty!")
 
-
     def update(self):
-        if(len(self.entities)):
-            for entity in self.entities.values():
-                entity.update()
+        # if(len(self.entities)):
+        #     for entity in self.entities:
+        #         entity.update()
+        self.entities.update()
 
     def render(self,screen):
-        for key, entity in self.entities.items():
+        for entity in self.entities:
             entity.render(screen)
 
 
