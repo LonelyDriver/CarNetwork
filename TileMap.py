@@ -51,7 +51,7 @@ class Tileset:
 
     def initialize(self):
         self.initTile('street', 8, 0)
-        self.initTile('gras', 12, 7)
+        self.initTile('grass', 12, 7)
 
     def getTile(self, name):
         return self.__tile_type[name]
@@ -59,12 +59,6 @@ class Tileset:
     def initTile(self, name, countX, countY):
         surface = pg.Surface(TILESIZE)
         surface.blit(self.manager.getSprite('sheet'), (0, 0),
-                     pg.rect.Rect(TILESIZE[0] * countX, TILESIZE[0] * countY, TILESIZE[0], TILESIZE[1]))
+                     pg.rect.Rect(TILESIZE[0] * countX, TILESIZE[1] * countY, TILESIZE[0], TILESIZE[1]))
         self.__tile_type[name] = surface
-
-
-
-class Map:
-    def __init__(self):
-        pass
 

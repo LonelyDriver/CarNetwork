@@ -68,19 +68,27 @@ class Car(pg.sprite.Sprite):
 
 class World():
     def __init__(self):
+        self.loadMap("map.txt")
+        self.init()
+
+    def loadMap(self, filename):
+        self.map_data = []
+        with open(filename, 'rt') as f:
+            for line in f:
+                self.map_data.append(line)
+
+    def init(self):
         self.entities = pg.sprite.Group()
         self.manager = ResourceManager.Manager()
-        self.map = TileMap.Tileset(self.manager)
-
-        for x in range(3):
-            for y in range(3):
-                if y % 2:
-                    TileMap.StreetTile(self.map.getTile('street'),self.entities, x, y)
-                else:
-                    TileMap.GrasTile(self.map.getTile('gras'), self.entities, x, y)
-
+        self.tileset = TileMap.Tileset(self.manager)
+        for row, tiles in enumerate(self.map_data):
+            for col, tile in enumerate(tiles):
+                if tile == '1':
+                    TileMap.StreetTile(self.tileset.getTile('street'), self.entities, col, row)
+                elif tile == '.':
+                    TileMap.GrasTile(self.tileset.getTile('grass'), self.entities, col, row)
         Car(self.manager, self.entities)
-        stop=1
+
 
     def processEvents(self):
         if(len(self.entities)):
