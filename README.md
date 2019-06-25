@@ -15,7 +15,8 @@ Neural Network that learns to play a raceing game.
     - [x] Create Tiles from Tileset
     - [ ] Make Tiles with different properties
     - [ ] Collision
-    - [ ] Read from Mapfile
+    - [x] Read from Mapfile
+    - [ ] Implement Camera
   - [ ] Get state vector
   - [ ] Visualize state vector
   
