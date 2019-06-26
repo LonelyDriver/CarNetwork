@@ -20,14 +20,13 @@ class Car(pg.sprite.Sprite):
         self.friction = .95
 
         self.image = manager.getSprite('car')
-        # self.image = pg.image.load("assets/PNG/cars/car5_red.png")
+
         self.image = pg.transform.rotate(self.image, 270)
         self.rot_image = self.image.copy()
-        # self.rot_image = pg.transform.rotate(self.image, 270)
-        # self.rect = self.rot_image.get_rect()
+
         self.rect = self.image.get_rect()
-        self.rect.center = (WIDTH/2, HEIGHT/2)
-        self.pos = [WIDTH/2, HEIGHT/2]
+        self.rect.center = (MAPWIDTH/2, MAPHEIGHT/2)
+        self.pos = [MAPWIDTH*100, MAPHEIGHT*100]
 
     def processEvents(self):
         keys = pg.key.get_pressed()
@@ -83,8 +82,12 @@ class World():
         self.tileset = TileMap.Tileset(self.manager)
         for row, tiles in enumerate(self.map_data):
             for col, tile in enumerate(tiles):
-                if tile == '1':
-                    TileMap.StreetTile(self.tileset.getTile('street'), self.entities, col, row)
+                if tile == '(':
+                    TileMap.FinishTile1(self.tileset.getTile('finish1'), self.entities, col, row)
+                elif tile == ')':
+                    TileMap.FinishTile2(self.tileset.getTile('finish2'), self.entities, col, row)
+                elif tile == 'z':
+                    TileMap.FinishTile3(self.tileset.getTile('finish3'), self.entities, col, row)
                 elif tile == '.':
                     TileMap.GrasTile(self.tileset.getTile('grass'), self.entities, col, row)
         Car(self.manager, self.entities)
@@ -98,9 +101,6 @@ class World():
             print("World is empty!")
 
     def update(self):
-        # if(len(self.entities)):
-        #     for entity in self.entities:
-        #         entity.update()
         self.entities.update()
 
     def render(self,screen):
@@ -114,7 +114,7 @@ class World():
 class Game():
     def __init__(self):
         pg.init()
-        self.screen = pg.display.set_mode((WIDTH,HEIGHT))
+        self.screen = pg.display.set_mode((MAPWIDTH*TILESIZE,MAPHEIGHT*TILESIZE))
         pg.display.set_caption("Car Network")
 
         self.running = False

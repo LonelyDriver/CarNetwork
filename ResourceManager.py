@@ -1,16 +1,14 @@
 import os
 import pygame as pg
-from enum import Enum, unique
-
 
 class Manager:
     def __init__(self):
         self.map = []
         self.sprites = {}
         self.directory = (os.path.dirname(__file__))
-        sprite_sheet = self._loadImage(os.path.join(self.directory, "assets\Spritesheets\Other.png"))
+        sprite_sheet = self._loadImage(os.path.join(self.directory, "assets\Spritesheets\spritesheet_tiles.png"))
 
-        car_sprite = self._loadImage(os.path.join(self.directory,"assets\PNG\Cars\car5_red.png"))
+        car_sprite = self._loadImage(os.path.join(self.directory,"assets\PNG\Cars\car_blue_small_1.png"))
         self.sprites['car'] = car_sprite
         self.sprites['sheet'] = sprite_sheet
 
@@ -19,7 +17,6 @@ class Manager:
 
     def _loadImage(self, filename, colorkey=None):
         image = pg.image.load(filename)
-
         # if image.get_alpha():
         #     image = image.convert()
         # else:
