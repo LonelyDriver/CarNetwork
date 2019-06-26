@@ -87,8 +87,12 @@ class World():
                 elif tile == ')':
                     TileMap.FinishTile2(self.tileset.getTile('finish2'), self.entities, col, row)
                 elif tile == 'z':
-                    TileMap.FinishTile3(self.tileset.getTile('finish3'), self.entities, col, row)
-                elif tile == '.':
+                    TileMap.StreetLeft(self.tileset.getTile('finish3'), self.entities, col, row)
+                elif tile == 'c':
+                    TileMap.StreetMiddle(self.tileset.getTile('street'), self.entities, col, row)
+                elif tile == 'b':
+                    TileMap.FinishTile3(self.tileset.getTile('streetR'), self.entities, col, row)
+                elif tile == 'a':
                     TileMap.GrasTile(self.tileset.getTile('grass'), self.entities, col, row)
         Car(self.manager, self.entities)
 

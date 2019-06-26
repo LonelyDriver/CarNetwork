@@ -45,6 +45,27 @@ class FinishTile3(Basetile):
     def onCollision(self):
         pass
 
+class StreetLeft(Basetile):
+    def __init__(self,image, sprite_group, posX, posY):
+        super().__init__(image, sprite_group, posX, posY)
+
+    def onCollision(self):
+        pass
+
+class StreetRight(Basetile):
+    def __init__(self,image, sprite_group, posX, posY):
+        super().__init__(image, sprite_group, posX, posY)
+
+    def onCollision(self):
+        pass
+
+class StreetMiddle(Basetile):
+    def __init__(self,image, sprite_group, posX, posY):
+        super().__init__(image, sprite_group, posX, posY)
+
+    def onCollision(self):
+        pass
+
 class GrasTile(Basetile):
     def __init__(self, image, sprite_group, posX, posY):
         super().__init__(image, sprite_group, posX, posY)
@@ -66,7 +87,9 @@ class Tileset:
         self.initTile('finish1', ((TILESIZE+2)*16, (TILESIZE+2)*3, TILESIZE, TILESIZE))
         self.initTile('finish2', ((TILESIZE + 2) * 16, (TILESIZE + 2) * 1, TILESIZE, TILESIZE))
         self.initTile('finish3', ((TILESIZE + 2) * 16, (TILESIZE + 2) * 2, TILESIZE, TILESIZE))
-        self.initTile('grass', ((TILESIZE+2)*8,(TILESIZE+2) * 10 , TILESIZE, TILESIZE))
+        self.initTile('street', ((TILESIZE + 2) * 19, (TILESIZE + 2) * 5, TILESIZE, TILESIZE))
+        self.initTile('streetR', ((TILESIZE + 2) * 19, (TILESIZE + 2) * 4, TILESIZE, TILESIZE))
+        self.initTile('streetL', ((TILESIZE + 2) * 19, (TILESIZE + 2) * 6, TILESIZE, TILESIZE))
 
     def getTile(self, name):
         return self.__tile_type[name]
