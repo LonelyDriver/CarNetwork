@@ -82,18 +82,38 @@ class World():
         self.tileset = TileMap.Tileset(self.manager)
         for row, tiles in enumerate(self.map_data):
             for col, tile in enumerate(tiles):
-                if tile == '(':
-                    TileMap.FinishTile1(self.tileset.getTile('finish1'), self.entities, col, row)
-                elif tile == ')':
-                    TileMap.FinishTile2(self.tileset.getTile('finish2'), self.entities, col, row)
-                elif tile == 'z':
-                    TileMap.StreetLeft(self.tileset.getTile('finish3'), self.entities, col, row)
-                elif tile == 'c':
-                    TileMap.StreetMiddle(self.tileset.getTile('street'), self.entities, col, row)
+                if tile == 'a':
+                    TileMap.Street(self.tileset.getTile('street100'), self.entities, col, row)
                 elif tile == 'b':
-                    TileMap.FinishTile3(self.tileset.getTile('streetR'), self.entities, col, row)
-                elif tile == 'a':
-                    TileMap.GrasTile(self.tileset.getTile('grass'), self.entities, col, row)
+                    TileMap.Street(self.tileset.getTile('street101'), self.entities, col, row)
+                elif tile == 'c':
+                    TileMap.Street(self.tileset.getTile('street102'), self.entities, col, row)
+                elif tile == 'd':
+                    TileMap.Street(self.tileset.getTile('street000'), self.entities, col, row)
+                elif tile == 'e':
+                    TileMap.Street(self.tileset.getTile('street200'), self.entities, col, row)
+                elif tile == 'f':
+                    TileMap.Street(self.tileset.getTile('street201'), self.entities, col, row)
+                elif tile == 'g':
+                    TileMap.Street(self.tileset.getTile('street202'), self.entities, col, row)
+                elif tile == 'h':
+                    TileMap.Street(self.tileset.getTile('street203'), self.entities, col, row)
+                elif tile == 'i':
+                    TileMap.Street(self.tileset.getTile('street210'), self.entities, col, row)
+                elif tile == 'j':
+                    TileMap.Street(self.tileset.getTile('street211'), self.entities, col, row)
+                elif tile == 'k':
+                    TileMap.Street(self.tileset.getTile('street212'), self.entities, col, row)
+                elif tile == 'l':
+                    TileMap.Street(self.tileset.getTile('street213'), self.entities, col, row)
+                elif tile == 'm':
+                    TileMap.Street(self.tileset.getTile('street230'), self.entities, col, row)
+                elif tile == 'n':
+                    TileMap.Street(self.tileset.getTile('street231'), self.entities, col, row)
+                elif tile == 'o':
+                    TileMap.Street(self.tileset.getTile('street232'), self.entities, col, row)
+                elif tile == 'p':
+                    TileMap.Street(self.tileset.getTile('street233'), self.entities, col, row)
         Car(self.manager, self.entities)
 
 
