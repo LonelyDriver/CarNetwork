@@ -7,7 +7,7 @@ class Basetile(pg.sprite.Sprite):
         super().__init__()
         sprite_group.add(self)
         self.image = image
-        self.rect = pg.rect.Rect(0, 0, TILESIZE, TILESIZE)
+        self.rect = pg.Rect(0, 0, TILESIZE, TILESIZE)
         self.setPosition(posX, posY)
 
     def processEvents(self):

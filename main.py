@@ -4,7 +4,7 @@ import math as m
 import TileMap
 import ResourceManager
 from settings import *
-
+from Camera import Camera, Map
 
 
 class Car(pg.sprite.Sprite):
@@ -19,14 +19,14 @@ class Car(pg.sprite.Sprite):
         self.rot_speed = 3
         self.friction = .95
 
-        self.image = manager.getSprite('car')
+        self.true_image = manager.getSprite('car')
 
-        self.image = pg.transform.rotate(self.image, 270)
-        self.rot_image = self.image.copy()
+        self.true_image = pg.transform.rotate(self.true_image, 270)
+        self.image = self.true_image.copy()
 
-        self.rect = self.image.get_rect()
-        self.rect.center = (MAPWIDTH/2, MAPHEIGHT/2)
-        self.pos = [MAPWIDTH*100, MAPHEIGHT*100]
+        self.rect = self.true_image.get_rect()
+        self.rect.center = (SCREENWIDTH/2, SCREENHEIGHT/2)
+        self.pos = [SCREENWIDTH*100, SCREENHEIGHT*100]
 
     def processEvents(self):
         keys = pg.key.get_pressed()
@@ -45,8 +45,8 @@ class Car(pg.sprite.Sprite):
         self.vel[0] = m.cos(m.radians(self.angle)) * vel_mag
         self.vel[1] = m.sin(m.radians(self.angle)) * vel_mag
 
-        self.rot_image = pg.transform.rotate(self.image, -self.angle)
-        self.rect = self.rot_image.get_rect()
+        self.image = pg.transform.rotate(self.true_image, -self.angle)
+        self.rect = self.image.get_rect()
         self.rect.center = self.pos
 
         if self.isMoving:
@@ -62,25 +62,18 @@ class Car(pg.sprite.Sprite):
         self.rect.centerx = self.pos[0]
         self.rect.centery = self.pos[1]
 
-    def render(self, screen):
-        screen.blit(self.rot_image,self.rect)
-
 class World():
-    def __init__(self):
-        self.loadMap("map.txt")
+    def __init__(self, screen):
+        self.screen = screen
+        self.map = Map("map.txt")
         self.init()
-
-    def loadMap(self, filename):
-        self.map_data = []
-        with open(filename, 'rt') as f:
-            for line in f:
-                self.map_data.append(line)
+        self.camera = Camera(self.map.width, self.map.height)
 
     def init(self):
         self.entities = pg.sprite.Group()
         self.manager = ResourceManager.Manager()
         self.tileset = TileMap.Tileset(self.manager)
-        for row, tiles in enumerate(self.map_data):
+        for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
                 if tile == 'a':
                     TileMap.Street(self.tileset.getTile('street100'), self.entities, col, row)
@@ -114,7 +107,7 @@ class World():
                     TileMap.Street(self.tileset.getTile('street232'), self.entities, col, row)
                 elif tile == 'p':
                     TileMap.Street(self.tileset.getTile('street233'), self.entities, col, row)
-        Car(self.manager, self.entities)
+        self.car = Car(self.manager, self.entities)
 
 
     def processEvents(self):
@@ -126,10 +119,11 @@ class World():
 
     def update(self):
         self.entities.update()
+        self.camera.update(self.car)
 
-    def render(self,screen):
+    def render(self, screen):
         for entity in self.entities:
-            entity.render(screen)
+            screen.blit(entity.image, self.camera.apply(entity))
 
 
 
@@ -138,11 +132,11 @@ class World():
 class Game():
     def __init__(self):
         pg.init()
-        self.screen = pg.display.set_mode((MAPWIDTH*TILESIZE,MAPHEIGHT*TILESIZE))
+        self.screen = pg.display.set_mode((SCREENWIDTH*TILESIZE,SCREENHEIGHT*TILESIZE))
         pg.display.set_caption("Car Network")
 
         self.running = False
-        self.world = World()
+        self.world = World(self.screen)
 
     def processEvents(self):
         for event in pg.event.get():
