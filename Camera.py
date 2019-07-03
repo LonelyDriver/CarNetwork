@@ -7,10 +7,10 @@ class Map:
         with open(filename, 'rt') as f:
             for line in f:
                 self.data.append(line)
-        self.tile_width = len(self.data[0])-1
-        self.tile_height = len(self.data)
-        self.width = self.tile_width * TILESIZE
-        self.height = self.tile_height * TILESIZE
+        self.tile_countX = len(self.data[0])-1
+        self.tile_countY = len(self.data)
+        self.width = self.tile_countX * TILESIZE
+        self.height = self.tile_countY * TILESIZE
 
 class Camera:
     def __init__(self, width, height):

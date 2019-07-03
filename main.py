@@ -1,32 +1,38 @@
 import pygame as pg
-import numpy as np
 import math as m
-import TileMap
+from TileMap import Tileset, Street, Gras
 import ResourceManager
 from settings import *
 from Camera import Camera, Map
 
 
 class Car(pg.sprite.Sprite):
-    def __init__(self, manager, sprite_group):
+    def __init__(self, manager, sprite_group, worldX, worldY):
         super().__init__()
         sprite_group.add(self)
+        self._worldX = worldX
+        self._worldY = worldY
         self.rotate = 0
         self.isMoving = False
         self.acc = 0.5
         self.vel = [0, 0]
-        self.angle = 270
-        self.rot_speed = 3
-        self.friction = .95
 
+        self.rot_speed = 2
+        self.friction = .94
+        self.initImage(manager)
+        self.manager = manager
+
+
+    def initImage(self, manager):
+        self.angle = 270
         self.true_image = manager.getSprite('car')
 
-        self.true_image = pg.transform.rotate(self.true_image, 270)
+        self.true_image = pg.transform.rotate(self.true_image, self.angle)
         self.image = self.true_image.copy()
 
         self.rect = self.true_image.get_rect()
-        self.rect.center = (SCREENWIDTH/2, SCREENHEIGHT/2)
-        self.pos = [SCREENWIDTH*100, SCREENHEIGHT*100]
+        self.rect.center = (SCREENWIDTH / 2, SCREENHEIGHT / 2)
+        self.pos = [SCREENWIDTH * 30, SCREENHEIGHT * 120]#
 
     def processEvents(self):
         keys = pg.key.get_pressed()
@@ -62,52 +68,79 @@ class Car(pg.sprite.Sprite):
         self.rect.centerx = self.pos[0]
         self.rect.centery = self.pos[1]
 
+        # collision with map dim
+        if self.pos[0] <= self.rect.width / 2:
+            self.pos[0] = self.rect.width / 2
+        if self.pos[1] <= self.rect.height / 2:
+            self.pos[1] = self.rect.height / 2
+        if self.pos[0] >= self._worldX - self.rect.width / 2:
+            self.pos[0] = self._worldX - self.rect.width / 2
+        if self.pos[1] >= self._worldY- self.rect.height / 2:
+            self.pos[1] = self._worldY - self.rect.height / 2
+
+    def reset(self):
+        self.pos = [SCREENWIDTH*30, SCREENHEIGHT*120]
+        self.vel = [0, 0]
+        self.initImage(self.manager)
+
+
 class World():
     def __init__(self, screen):
         self.screen = screen
         self.map = Map("map.txt")
+        self._worldX = self.map.width
+        self._worldY = self.map.height
         self.init()
         self.camera = Camera(self.map.width, self.map.height)
 
     def init(self):
         self.entities = pg.sprite.Group()
+        self.street = pg.sprite.Group()
+        self.grass = pg.sprite.Group()
         self.manager = ResourceManager.Manager()
-        self.tileset = TileMap.Tileset(self.manager)
+        self.tileset = Tileset(self.manager)
         for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
                 if tile == 'a':
-                    TileMap.Street(self.tileset.getTile('street100'), self.entities, col, row)
+                    Street(self.tileset.getTile('street100'), col, row, [self.entities, self.street])
                 elif tile == 'b':
-                    TileMap.Street(self.tileset.getTile('street101'), self.entities, col, row)
+                    Street(self.tileset.getTile('street101'), col, row, [self.entities, self.street])
                 elif tile == 'c':
-                    TileMap.Street(self.tileset.getTile('street102'), self.entities, col, row)
+                    Street(self.tileset.getTile('street102'), col, row, [self.entities, self.street])
                 elif tile == 'd':
-                    TileMap.Street(self.tileset.getTile('street000'), self.entities, col, row)
+                    Street(self.tileset.getTile('street000'), col, row, [self.entities, self.street])
                 elif tile == 'e':
-                    TileMap.Street(self.tileset.getTile('street200'), self.entities, col, row)
+                    Street(self.tileset.getTile('street200'), col, row, [self.entities, self.street])
                 elif tile == 'f':
-                    TileMap.Street(self.tileset.getTile('street201'), self.entities, col, row)
+                    Street(self.tileset.getTile('street201'), col, row, [self.entities, self.street])
                 elif tile == 'g':
-                    TileMap.Street(self.tileset.getTile('street202'), self.entities, col, row)
+                    Street(self.tileset.getTile('street202'), col, row, [self.entities, self.street])
                 elif tile == 'h':
-                    TileMap.Street(self.tileset.getTile('street203'), self.entities, col, row)
+                    Street(self.tileset.getTile('street203'), col, row, [self.entities, self.street])
                 elif tile == 'i':
-                    TileMap.Street(self.tileset.getTile('street210'), self.entities, col, row)
+                    Street(self.tileset.getTile('street210'), col, row, [self.entities, self.street])
                 elif tile == 'j':
-                    TileMap.Street(self.tileset.getTile('street211'), self.entities, col, row)
+                    Street(self.tileset.getTile('street211'), col, row, [self.entities, self.street])
                 elif tile == 'k':
-                    TileMap.Street(self.tileset.getTile('street212'), self.entities, col, row)
+                    Street(self.tileset.getTile('street212'), col, row, [self.entities, self.street])
                 elif tile == 'l':
-                    TileMap.Street(self.tileset.getTile('street213'), self.entities, col, row)
+                    Street(self.tileset.getTile('street213'), col, row, [self.entities, self.street])
                 elif tile == 'm':
-                    TileMap.Street(self.tileset.getTile('street230'), self.entities, col, row)
+                    Street(self.tileset.getTile('street230'), col, row, [self.entities, self.street])
                 elif tile == 'n':
-                    TileMap.Street(self.tileset.getTile('street231'), self.entities, col, row)
+                    Street(self.tileset.getTile('street231'), col, row, [self.entities, self.street])
                 elif tile == 'o':
-                    TileMap.Street(self.tileset.getTile('street232'), self.entities, col, row)
+                    Street(self.tileset.getTile('street232'), col, row, [self.entities, self.street])
                 elif tile == 'p':
-                    TileMap.Street(self.tileset.getTile('street233'), self.entities, col, row)
-        self.car = Car(self.manager, self.entities)
+                    Street(self.tileset.getTile('street233'), col, row, [self.entities, self.street])
+                elif tile == 'q':
+                    Street(self.tileset.getTile('street240'), col, row, [self.entities, self.street])
+                elif tile == '1':
+                    Gras(self.tileset.getTile('gras000'), col, row, [self.entities, self.grass])
+
+        self.car = Car(self.manager, self.entities, self._worldX, self._worldY)
+
+
 
 
     def processEvents(self):
@@ -119,6 +152,12 @@ class World():
 
     def update(self):
         self.entities.update()
+        # collision check
+        # for entity in self.grass:
+        collisions = pg.sprite.spritecollide(self.car, self.grass, False)
+        if collisions:
+            self.car.reset()
+
         self.camera.update(self.car)
 
     def render(self, screen):

@@ -3,9 +3,8 @@ from settings import *
 
 
 class Basetile(pg.sprite.Sprite):
-    def __init__(self, image, sprite_group, posX, posY):
-        super().__init__()
-        sprite_group.add(self)
+    def __init__(self, image, posX, posY, *sprite_groups):
+        pg.sprite.Sprite.__init__(self, *sprite_groups)
         self.image = image
         self.rect = pg.Rect(0, 0, TILESIZE, TILESIZE)
         self.setPosition(posX, posY)
@@ -24,8 +23,15 @@ class Basetile(pg.sprite.Sprite):
         self.rect.y = posY * TILESIZE
 
 class Street(Basetile):
-    def __init__(self,image, sprite_group, posX, posY):
-        super().__init__(image, sprite_group, posX, posY)
+    def __init__(self, image, posX, posY, *sprite_groups):
+        Basetile.__init__(self, image, posX, posY, *sprite_groups)
+
+    def onCollision(self):
+        pass
+
+class Gras(Basetile):
+    def __init__(self,image, posX, posY, *sprite_groups):
+        Basetile.__init__(self, image, posX, posY, *sprite_groups)
 
     def onCollision(self):
         pass
@@ -61,6 +67,10 @@ class Tileset:
         self.initTile('street231', ((TILESIZE + 2) * 17, (TILESIZE + 2) * 12, TILESIZE, TILESIZE))
         self.initTile('street232', ((TILESIZE + 2) * 18, (TILESIZE + 2) * 14, TILESIZE, TILESIZE))
         self.initTile('street233', ((TILESIZE + 2) * 19, (TILESIZE + 2) * 0, TILESIZE, TILESIZE))
+        # Box
+        self.initTile('street240', ((TILESIZE + 2) * 16, (TILESIZE + 2) * 11, TILESIZE, TILESIZE))
+        # Gras only
+        self.initTile('gras000', ((TILESIZE+2)*7, (TILESIZE+2)*2, TILESIZE, TILESIZE))
         # self.initTile('streetDotRU', ((TILESIZE + 2) * 18, (TILESIZE + 2) * 2, TILESIZE, TILESIZE))
 
     def getTile(self, name):
