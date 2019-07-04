@@ -1,6 +1,6 @@
 # CarNetwork
 
-Neural Network that learns to play a raceing game.
+Neural Network that learns to play a racing game.
 
 - Game implementation via Pygame
 - Network trained via reinforcement learning
