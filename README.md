@@ -10,11 +10,11 @@ Neural Network that learns to play a raceing game.
   - [x] Implement Basic Game Loop
   - [x] Car control
   - [x] Implement car physics
-  - [ ] Create Map
+  - [x] Create Map
     - [x] Implement Resourcemanager
     - [x] Create Tiles from Tileset
-    - [ ] Make Tiles with different properties
-    - [ ] Collision
+    - [x] Make Tiles with different properties
+    - [x] Collision
     - [x] Read from Mapfile
     - [x] Implement Camera
   - [ ] Get state vector
