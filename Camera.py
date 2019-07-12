@@ -21,6 +21,7 @@ class Camera:
     def apply(self, entity):
         return entity.rect.move(self.camera.topleft)
 
+
     def update(self, target):
         x = -target.rect.centerx + int(SCREENWIDTH*TILESIZE / 2)
         y = -target.rect.centery + int(SCREENHEIGHT*TILESIZE / 2)
@@ -28,3 +29,6 @@ class Camera:
         x = max(-(self.width - SCREENWIDTH*TILESIZE),min(0,x))
         y = max(-(self.height - SCREENHEIGHT * TILESIZE), min(0, y))
         self.camera = pg.Rect(x, y, self.width, self.height)
+
+    def getOffset(self):
+        return [self.camera.x, self.camera.y]

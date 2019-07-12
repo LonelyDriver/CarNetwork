@@ -6,7 +6,8 @@ class Basetile(pg.sprite.Sprite):
     def __init__(self, image, posX, posY, *sprite_groups):
         pg.sprite.Sprite.__init__(self, *sprite_groups)
         self.image = image
-        self.rect = pg.Rect(0, 0, TILESIZE, TILESIZE)
+        self.image.set_colorkey((0, 0, 0))
+        self.rect = pg.rect.Rect(0, 0, TILESIZE, TILESIZE)
         self.setPosition(posX, posY)
 
     def processEvents(self):
@@ -21,6 +22,9 @@ class Basetile(pg.sprite.Sprite):
     def setPosition(self, posX, posY):
         self.rect.x = posX * TILESIZE
         self.rect.y = posY * TILESIZE
+
+    def getPosition(self):
+        return self.rect.center
 
 class Street(Basetile):
     def __init__(self, image, posX, posY, *sprite_groups):

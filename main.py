@@ -5,6 +5,75 @@ import ResourceManager
 from settings import *
 from Camera import Camera, Map
 
+class IntersectLine:
+    def __init__(self, car, camera):
+        self.car = car
+        self.camera = camera
+        self.maxDistance = 300
+        # line polynom y = ax + b
+        self.rect = self.car.getRect()
+        self.rectB = pg.rect.Rect(0, 0, 20, 20)
+        self.angle = 0
+    def reset(self):
+        self.maxDistance = 300
+
+    def update(self):
+        # self.rect = self.car.getRect()
+        self.rect = self.camera.apply(self.car)
+        self.angle = self.car.getAngle()
+        # calc endpoint
+        self.rectB.x = (m.cos(m.radians(self.angle)) * self.maxDistance) + self.rect.x
+        self.rectB.y = (m.sin(m.radians(self.angle)) * self.maxDistance) + self.rect.y
+
+    def render(self, screen):
+        pg.draw.line(screen, RED, self.rect.center, self.rectB.center, 2)
+
+
+
+class Line:
+    def __init__(self, car):
+        super().__init__()
+        self.car = car
+        self.rect = pg.rect.Rect(0, 0, 20, 20)
+        self.rectEnd = self.rect
+        self.angle = []
+        self.maxDistance = 300
+
+    def reset(self):
+        self.maxDistance = 300
+
+    def checkCollision(self, grassTiles):
+        for tile in grassTiles:
+            pos = tile.getPosition()
+            vec = [pos[0] - self.rectEnd.x, pos[1] - self.rectEnd.y]
+            distance = m.sqrt(vec[0] * vec[0] + vec[1] * vec[1])
+            if distance <= HALFTILESIZE:
+                print("True")
+                # buttom collision
+                # if self.rectEnd.x > pos[0] - HALFTILESIZE and \
+                #     self.rectEnd.x < pos[0] + HALFTILESIZE and \
+                #     self.rectEnd.y > pos[1] - HALFTILESIZE and \
+                #     self.rectEnd.y < pos[1] + HALFTILESIZE:
+
+
+
+    def update(self):
+        self.rect.topleft = self.car.getPos()
+        self.angle = self.car.getAngle()
+
+        self.rectEnd.x = m.cos(m.radians(self.angle)) * self.maxDistance
+        self.rectEnd.y = m.sin(m.radians(self.angle)) * self.maxDistance
+
+
+    def render(self, screen, camera):
+        a = camera.apply(self)
+        b = pg.rect.Rect(0,0, TILESIZE, TILESIZE)
+        b.x = self.rectEnd.x + a.x
+        b.y = self.rectEnd.y + a.y
+        # self.rectEnd.x = self.rectEnd.x + self.rect.x
+        # self.rectEnd.y = self.rectEnd.y + self.rect.y
+        pg.draw.line(screen, RED, a.topleft, b.topleft, 2)
+
 
 class Car(pg.sprite.Sprite):
     def __init__(self, manager, sprite_group, worldX, worldY):
@@ -14,14 +83,31 @@ class Car(pg.sprite.Sprite):
         self._worldY = worldY
         self.rotate = 0
         self.isMoving = False
-        self.acc = 0.5
+        self.acc = 0.6
         self.vel = [0, 0]
+        self.velVec = [0, 0]
+        self.pos = [0, 0]
+        self.rot_speed = 3
+        self.friction = .9
 
-        self.rot_speed = 2
-        self.friction = .94
         self.initImage(manager)
         self.manager = manager
+        # line x, y values
+        # self.line = pg.rect.Rect(self.pos[0], self.pos[1], worldX, worldY)
+        # pygame angle counterclockwise
+        # self.abs_angle = 270
 
+    def getRect(self):
+        return self.rect
+
+    def getPos(self):
+        return self.pos
+
+    def getAngle(self):
+        return self.angle
+
+    def getVelVec(self):
+        return self.velVec
 
     def initImage(self, manager):
         self.angle = 270
@@ -32,12 +118,16 @@ class Car(pg.sprite.Sprite):
 
         self.rect = self.true_image.get_rect()
         self.rect.center = (SCREENWIDTH / 2, SCREENHEIGHT / 2)
-        self.pos = [SCREENWIDTH * 30, SCREENHEIGHT * 120]#
+        self.pos = [SCREENWIDTH * 30, SCREENHEIGHT * 120]
 
     def processEvents(self):
         keys = pg.key.get_pressed()
-        self.isMoving = False
+
+        self.isMoving = 0
         self.isMoving += keys[pg.K_w]
+        self.isMoving -= keys[pg.K_s]
+
+        # self.isMoving = max(-1, min(1, self.isMoving))
 
         self.rotate = 0
         if self.isMoving:
@@ -53,11 +143,10 @@ class Car(pg.sprite.Sprite):
 
         self.image = pg.transform.rotate(self.true_image, -self.angle)
         self.rect = self.image.get_rect()
-        self.rect.center = self.pos
 
-        if self.isMoving:
-            self.vel[0] += m.cos(m.radians(self.angle)) * self.acc
-            self.vel[1] += m.sin(m.radians(self.angle)) * self.acc
+        if self.isMoving != 0:
+            self.vel[0] = self.vel[0] + m.cos(m.radians(self.angle)) * self.acc * self.isMoving
+            self.vel[1] = self.vel[1] + m.sin(m.radians(self.angle)) * self.acc * self.isMoving
 
         self.pos[0] += self.vel[0]
         self.pos[1] += self.vel[1]
@@ -65,8 +154,7 @@ class Car(pg.sprite.Sprite):
         self.vel[0] *= self.friction
         self.vel[1] *= self.friction
 
-        self.rect.centerx = self.pos[0]
-        self.rect.centery = self.pos[1]
+        self.rect.center = self.pos
 
         # collision with map dim
         if self.pos[0] <= self.rect.width / 2:
@@ -81,6 +169,7 @@ class Car(pg.sprite.Sprite):
     def reset(self):
         self.pos = [SCREENWIDTH*30, SCREENHEIGHT*120]
         self.vel = [0, 0]
+        self.isMoving = 0
         self.initImage(self.manager)
 
 
@@ -90,8 +179,8 @@ class World():
         self.map = Map("map.txt")
         self._worldX = self.map.width
         self._worldY = self.map.height
-        self.init()
         self.camera = Camera(self.map.width, self.map.height)
+        self.init()
 
     def init(self):
         self.entities = pg.sprite.Group()
@@ -136,12 +225,12 @@ class World():
                 elif tile == 'q':
                     Street(self.tileset.getTile('street240'), col, row, [self.entities, self.street])
                 elif tile == '1':
+                    Gras(self.tileset.getTile('gras000'), col, row, self.entities)
+                elif tile == '2':
                     Gras(self.tileset.getTile('gras000'), col, row, [self.entities, self.grass])
 
         self.car = Car(self.manager, self.entities, self._worldX, self._worldY)
-
-
-
+        # self.line = IntersectLine(self.car, self.camera)
 
     def processEvents(self):
         if(len(self.entities)):
@@ -157,12 +246,20 @@ class World():
         collisions = pg.sprite.spritecollide(self.car, self.grass, False)
         if collisions:
             self.car.reset()
+            self.line.reset()
 
         self.camera.update(self.car)
+        self.line.update()
+        # self.line.checkCollision(self.grass)
+
 
     def render(self, screen):
         for entity in self.entities:
             screen.blit(entity.image, self.camera.apply(entity))
+
+        # self.line.rect = self.camera.apply(self.line)
+        self.line.render(screen)
+
 
 
 
@@ -171,7 +268,7 @@ class World():
 class Game():
     def __init__(self):
         pg.init()
-        self.screen = pg.display.set_mode((SCREENWIDTH*TILESIZE,SCREENHEIGHT*TILESIZE))
+        self.screen = pg.display.set_mode((SCREENWIDTH*TILESIZE, SCREENHEIGHT*TILESIZE))
         pg.display.set_caption("Car Network")
 
         self.running = False
