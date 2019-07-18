@@ -10,35 +10,45 @@ class Basetile(pg.sprite.Sprite):
         self.rect = pg.rect.Rect(0, 0, TILESIZE, TILESIZE)
         self.setPosition(posX, posY)
 
+
     def processEvents(self):
         pass
+
 
     def update(self):
         pass
 
+
     def render(self,screen):
         screen.blit(self.image, self.rect)
+
 
     def setPosition(self, posX, posY):
         self.rect.x = posX * TILESIZE
         self.rect.y = posY * TILESIZE
 
+
     def getPosition(self):
         return self.rect.center
+
 
 class Street(Basetile):
     def __init__(self, image, posX, posY, *sprite_groups):
         Basetile.__init__(self, image, posX, posY, *sprite_groups)
 
+
     def onCollision(self):
         pass
+
 
 class Gras(Basetile):
     def __init__(self,image, posX, posY, *sprite_groups):
         Basetile.__init__(self, image, posX, posY, *sprite_groups)
 
+
     def onCollision(self):
         pass
+
 
 class Tileset:
     def __init__(self, manager):
@@ -46,6 +56,7 @@ class Tileset:
         self.image = manager.getSprite('sheet')
         self.__tile_type = {}
         self.initialize()
+
 
     def initialize(self):
         # Sprite is 128x128 pixels at 0,0 on the spritesheet
@@ -77,15 +88,10 @@ class Tileset:
         self.initTile('gras000', ((TILESIZE+2)*7, (TILESIZE+2)*2, TILESIZE, TILESIZE))
         # self.initTile('streetDotRU', ((TILESIZE + 2) * 18, (TILESIZE + 2) * 2, TILESIZE, TILESIZE))
 
+
     def getTile(self, name):
         return self.__tile_type[name]
 
-    # def initTile(self, name, countX, countY):
-    #     surface = pg.Surface((TILESIZE, TILESIZE))
-    #     surface.blit(self.manager.getSprite('sheet'),
-    #                  dest=(0,0),
-    #                  area=pg.rect.Rect(TILESIZE * countX, TILESIZE * countY, TILESIZE, TILESIZE))
-    #     self.__tile_type[name] = surface
 
     def initTile(self, name, rectangle):
         rect = pg.Rect(rectangle)

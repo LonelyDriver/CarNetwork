@@ -12,6 +12,7 @@ class Map:
         self.width = self.tile_countX * TILESIZE
         self.height = self.tile_countY * TILESIZE
 
+
 class Camera:
     def __init__(self, width, height):
         self.camera = pg.Rect((0, 0, width, height))
@@ -20,7 +21,6 @@ class Camera:
 
     def apply(self, entity):
         return entity.rect.move(self.camera.topleft)
-
 
     def update(self, target):
         x = -target.rect.centerx + int(SCREENWIDTH*TILESIZE / 2)
@@ -31,4 +31,4 @@ class Camera:
         self.camera = pg.Rect(x, y, self.width, self.height)
 
     def getOffset(self):
-        return [self.camera.x, self.camera.y]
+        return self.camera.topleft
