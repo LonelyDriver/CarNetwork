@@ -6,7 +6,7 @@ Neural Network that learns to play a racing game.
 - Network trained via reinforcement learning
 
 ### TODO:
-- [ ] Implement Car game
+- [x] Implement Car game
   - [x] Implement Basic Game Loop
   - [x] Car control
   - [x] Implement car physics
@@ -17,7 +17,7 @@ Neural Network that learns to play a racing game.
     - [x] Collision
     - [x] Read from Mapfile
     - [x] Implement Camera
-  - [ ] Get state vector
-  - [ ] Visualize state vector
+  - [x] Get state vector
+  - [x] Visualize state vector
   
 - [ ] Implement NN
